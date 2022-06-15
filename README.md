@@ -20,7 +20,7 @@ tqdm
 python train.py --num_classes=[2 or 10] --fresh
 ```
 
-Will download the Mnist dataset for you, and start training. The defaults are tested on a `1080Ti`, Glow is a memory hungry model and it might be necessary to tune down the model size for your specific GPU. The output files will be send to `output/`.
+Will download the Mnist dataset for you, and start training. The output files will be sent to `output/`.
 
 Everything is configurable through command line arguments, see
 
