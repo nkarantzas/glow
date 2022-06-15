@@ -1,11 +1,8 @@
 import math
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from utils import split_feature, compute_same_pad
-
 
 def gaussian_p(mean, logs, x):
     """
@@ -16,18 +13,15 @@ def gaussian_p(mean, logs, x):
     c = math.log(2 * math.pi)
     return -0.5 * (logs * 2.0 + ((x - mean) ** 2) / torch.exp(logs * 2.0) + c)
 
-
 def gaussian_likelihood(mean, logs, x):
     p = gaussian_p(mean, logs, x)
     return torch.sum(p, dim=[1, 2, 3])
-
 
 def gaussian_sample(mean, logs, temperature=1):
     # Sample from Gaussian with temperature
     z = torch.normal(mean, torch.exp(logs) * temperature)
 
     return z
-
 
 def squeeze2d(input, factor):
     if factor == 1:
@@ -42,7 +36,6 @@ def squeeze2d(input, factor):
     x = x.view(B, C * factor * factor, H // factor, W // factor)
 
     return x
-
 
 def unsqueeze2d(input, factor):
     if factor == 1:
@@ -59,7 +52,6 @@ def unsqueeze2d(input, factor):
     x = x.view(B, C // (factor2), H * factor, W * factor)
 
     return x
-
 
 class _ActNorm(nn.Module):
     """
@@ -138,7 +130,6 @@ class _ActNorm(nn.Module):
 
         return input, logdet
 
-
 class ActNorm2d(_ActNorm):
     def __init__(self, num_features, scale=1.0):
         super().__init__(num_features, scale)
@@ -152,17 +143,13 @@ class ActNorm2d(_ActNorm):
             )
         )
 
-
 class LinearZeros(nn.Module):
     def __init__(self, in_channels, out_channels, logscale_factor=3):
         super().__init__()
-
         self.linear = nn.Linear(in_channels, out_channels)
         self.linear.weight.data.zero_()
         self.linear.bias.data.zero_()
-
         self.logscale_factor = logscale_factor
-
         self.logs = nn.Parameter(torch.zeros(out_channels))
 
     def forward(self, input):

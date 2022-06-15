@@ -1,8 +1,6 @@
 import math
-
 import torch
 import torch.nn as nn
-
 from modules import (
     Conv2d,
     Conv2dZeros,
@@ -17,7 +15,6 @@ from modules import (
 )
 from utils import split_feature, uniform_binning_correction
 
-
 def get_block(in_channels, out_channels, hidden_channels):
     block = nn.Sequential(
         Conv2d(in_channels, hidden_channels),
@@ -27,7 +24,6 @@ def get_block(in_channels, out_channels, hidden_channels):
         Conv2dZeros(hidden_channels, out_channels),
     )
     return block
-
 
 class FlowStep(nn.Module):
     def __init__(
@@ -121,7 +117,6 @@ class FlowStep(nn.Module):
 
         return z, logdet
 
-
 class FlowNet(nn.Module):
     def __init__(
         self,
@@ -189,7 +184,6 @@ class FlowNet(nn.Module):
                 z, logdet = layer(z, logdet=0, reverse=True)
         return z
 
-
 class Glow(nn.Module):
     def __init__(
         self,
@@ -231,24 +225,20 @@ class Glow(nn.Module):
             self.project_ycond = LinearZeros(y_classes, 2 * C)
             self.project_class = LinearZeros(C, y_classes)
 
-        self.register_buffer(
-            "prior_h",
-            torch.zeros(
-                [
-                    1,
-                    self.flow.output_shapes[-1][1] * 2,
-                    self.flow.output_shapes[-1][2],
-                    self.flow.output_shapes[-1][3],
-                ]
-            ),
-        )
+        ss = torch.zeros([
+            1,
+            self.flow.output_shapes[-1][1] * 2,
+            self.flow.output_shapes[-1][2],
+            self.flow.output_shapes[-1][3]
+        ])
+        self.register_buffer("prior_h", ss)
 
     def prior(self, data, y_onehot=None):
         if data is not None:
             h = self.prior_h.repeat(data.shape[0], 1, 1, 1)
         else:
             # Hardcoded a batch size of 32 here
-            h = self.prior_h.repeat(32, 1, 1, 1)
+            h = self.prior_h.repeat(y_onehot.shape[0], 1, 1, 1)
 
         channels = h.size(1)
 
