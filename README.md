@@ -10,6 +10,7 @@ The code has minimal dependencies. You need python 3.6+ and up to date versions 
 pytorch (tested on 1.1.0)
 torchvision
 pytorch-ignite
+torchattacks
 tqdm
 ```
 
